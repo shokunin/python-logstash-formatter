@@ -6,13 +6,6 @@ as json objects ready to be shipped out to logstash.
 
 Installing
 ----------
-Pip:
-
-    ``pip install logstash_formatter``
-
-Pypi:
-
-   https://pypi.python.org/pypi/logstash_formatter
 
 Manual:
 
@@ -21,83 +14,50 @@ Manual:
 Usage
 -----
 
-Json outputs are provided by the LogstashFormatter logging formatter.
+See example.py in the examples file for an example usage
 
-::
-
-    import logging
-    from logstash_formatter import LogstashFormatter
-
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = LogstashFormatter()
-
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-The LogstashFormatter may take the following named parameters:
-
-* ``fmt``: Config as a JSON string that supports:
-  * ``extra``: provide extra fields always present in logs
-  * ``source_host``: override source host name
-* ``json_cls``: JSON encoder to forward to ``json.dump``
-* ``json_default``: Default JSON representation for unknown types,
-    by default coerce everythiung to a string
-
-You can also add extra fields to your json output by specifying a dict in place of message, or by specifying
-the named argument ``extra`` as a dictionary. When supplying the ``exc_info`` named argument with a truthy value,
-and if an exception is found on the stack, its traceback will be attached to the payload as well.
-
-::
-
-    logger.info({"account": 123, "ip": "172.20.19.18"})
-    logger.info("classic message for account: %s", account, extra={"account": account})
-    
-    try:
-      h = {}
-      h['key']
-    except:
-      logger.info("something unexpected happened", exc_info=True)
+Logstash Integration
+-------------------
+See test in the examples file for an example logstash usage
 
 Sample output
 -------------
 
 The following keys will be found in the output JSON:
 
-* ``@source_host``: source hostname for the log
+* ``host``: source hostname for the log
 * ``@timestamp``: ISO 8601 timestamp
-* ``@message``: short message for this log
-* ``@fields``: all extra fields
+* ``message``: short message for this log
 
 ::
 
   {
-    "@fields": {
-        "account": "pyr",
-        "args": [],
-        "created": 1367480388.013037,
-        "exception": [
-            "Traceback (most recent call last):\n",
-            "  File \"toto.py\", line 16, in <module>\n    k['unknown']\n",
-            "KeyError: 'unknown'\n"
-        ],
-        "filename": "toto.py",
-        "funcName": "<module>",
-        "levelname": "WARNING",
-        "levelno": 30,
-        "lineno": 18,
-        "module": "toto",
-        "msecs": 13.036966323852539,
-        "name": "root",
-        "pathname": "toto.py",
-        "process": 1819,
-        "processName": "MainProcess",
-        "relativeCreated": 18.002986907958984,
-        "thread": 140060726359808,
-        "threadName": "MainThread"
-    },
-    "@message": "TOTO",
-    "@source_host": "phoenix.spootnik.org",
-    "@timestamp": "2013-05-02T09:39:48.013158"
+      "relativeCreated" => 9.686946868896484,
+              "process" => 26908,
+           "@timestamp" => "2015-01-14T16:05:25.315-08:00",
+                 "args" => [],
+               "module" => "test",
+             "funcName" => "<module>",
+                 "host" => "tamarin",
+              "message" => "classic message for account: foo",
+                 "must" => "deviate",
+                 "from" => {
+          "the" => "norm"
+      },
+                 "name" => "root",
+               "thread" => 140586531100480,
+              "created" => 1421280325.315806,
+           "threadName" => "MainThread",
+                "msecs" => 315.80591201782227,
+             "filename" => "test.py",
+              "levelno" => 20,
+          "processName" => "MainProcess",
+             "pathname" => "test.py",
+               "lineno" => 24,
+            "levelname" => "INFO",
+             "@version" => "1",
+                 "type" => "json_haproxy",
+                 "path" => "/home/chris/Code/python/myproject/log.json"
   }
+
 

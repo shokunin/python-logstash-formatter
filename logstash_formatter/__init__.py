@@ -89,10 +89,14 @@ class LogstashFormatter(logging.Formatter):
 
         logr = self.defaults.copy()
 
-        logr.update({'@message': msg,
+        logr.update({'message': msg,
                      '@timestamp': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-                     '@source_host': self.source_host,
-                     '@fields': self._build_fields(logr, fields)})
+                     'host': self.source_host})
+
+                     #'fields': self._build_fields(logr, fields)})
+        logr.update(self._build_fields(logr, fields))
+
+
 
         return json.dumps(logr, default=self.json_default, cls=self.json_cls)
 
@@ -104,16 +108,16 @@ class LogstashFormatter(logging.Formatter):
         >>> f._build_fields({}, {'foo': 'one'}) == \
                 {'foo': 'one'}
         True
-        # Verify that ``@fields`` in ``defaults`` is used
-        >>> f._build_fields({'@fields': {'bar': 'two'}}, {'foo': 'one'}) == \
+        # Verify that ``fields`` in ``defaults`` is used
+        >>> f._build_fields({'fields': {'bar': 'two'}}, {'foo': 'one'}) == \
                 {'foo': 'one', 'bar': 'two'}
         True
         # Verify that ``fields`` takes precedence
-        >>> f._build_fields({'@fields': {'foo': 'two'}}, {'foo': 'one'}) == \
+        >>> f._build_fields({'fields': {'foo': 'two'}}, {'foo': 'one'}) == \
                 {'foo': 'one'}
         True
         """
-        return dict(defaults.get('@fields', {}).items() + fields.items())
+        return dict(defaults.get('fields', {}).items() + fields.items())
 
 
 class LogstashFormatterV1(LogstashFormatter):
