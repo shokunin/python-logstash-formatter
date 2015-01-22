@@ -13,8 +13,7 @@ extra_dict['from'] = { 'the': 'norm' }
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-#handler = logging.handlers.DatagramHandler("localhost", 2112)
-handler = logging.StreamHandler(stream=sys.stdout)
+handler = logging.handlers.RotatingFileHandler(filename="/tmp/example_json.log",  maxBytes=12500, backupCount=5)
 formatter = LogstashFormatter()
 
 handler.setFormatter(formatter)
